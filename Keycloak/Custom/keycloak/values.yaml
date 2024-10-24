@@ -1,0 +1,117 @@
+# Default values for keycloak.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: quay.io/keycloak/keycloak              ### Dynamic
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 20.0.3                                                                                ### Dynamic
+
+imagePullSecrets: 
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+deploymentAnnotations:  
+  reloader.stakater.com/auto: "true"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # allowPrivilegeEscalation: true
+  # capabilities:
+  #   add:
+  #   - NET_ADMIN
+  # runAsGroup: 1000
+  # runAsUser: 1000
+
+volumeMounts:
+- name: data                         # EFS volume name
+  mountPath: /data
+
+volumes:
+  awsEKSCluster: false                                                                      ### Dynamic
+  storage: 5Gi
+  pvc_name: keycloak-postgres
+  className: gp3
+  vol_name: data                   # EFS volume name
+  efs_path: /APPDATA/Postgres 
+  efs_type: DirectoryOrCreate  
+
+
+envFromConfigMap:
+  KEYCLOAK_ADMIN: qadmin
+#  KEYCLOAK_ADMIN_PASSWORD: a2V5Y2xvYWsuYWRtaW5AcXJpdGl2ZS5jb20K
+  KC_PROXY: edge
+  KC_DB: postgres
+  KC_DB_SCHEMA: public
+  KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
+  KC_DB_USERNAME: keycloak
+  KC_HOSTNAME: keycloak
+#  KC_DB_PASSWORD: password
+  
+
+service:
+  annotations: {}
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    # service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-south-1:342948684072:certificate/5ec0051d-d764-4bb8-9d7b-0d9cca675b26
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+  type: LoadBalancer
+  port: 8080
+
+ingress:
+  enabled: false
+  annotations: 
+    nginx.org/redirect-to-https: "true"
+    nginx.org/server-snippets: |
+      proxy_set_header X-Forwarded-For  $remote_addr;
+  hosts:
+    - paths:
+        - path: /
+          pathType: ImplementationSpecific
+      subdomain: keycloak                                                                        ### Dynamic
+      domain: rgci-test.qritive.com                                                                     ### Dynamic
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  requests:
+    cpu: 500m
+    memory: 550Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: 
+  type: cpu                                                                                      ### Dynamic
+
+tolerations: []
+
+affinity: {}

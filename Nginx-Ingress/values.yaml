@@ -1,0 +1,42 @@
+controller:
+  autoscaling:
+    annotations: {}
+    enabled: false
+    maxReplicas: 3
+    minReplicas: 1
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  config:
+    annotations: {}
+    name: nginx-annotation-config
+  enableSnippets: true
+  hostNetwork: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: nginx/nginx-ingress
+    tag: 3.2.0
+  ingressClass:
+    create: true
+    name: nginx
+    setAsDefaultIngress: true
+  readOnlyRootFilesystem: true
+  replicaCount: 1
+  service:
+    annotations: {}
+    create: true
+    customPorts: []
+    externalTrafficPolicy: Local
+    httpPort:
+      enable: true
+      port: 80
+      targetPort: 80
+    httpsPort:
+      enable: true
+      port: 443
+      targetPort: 80
+    type: NodePort
+  serviceAccount:
+    annotations: {}
+    imagePullSecretName: ""
+    name: nginx-ingress
+  tolerations: []

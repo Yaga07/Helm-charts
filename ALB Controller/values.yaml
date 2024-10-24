@@ -1,0 +1,35 @@
+affinity: {}
+backendSecurityGroup: null
+cluster:
+  dnsDomain: cluster.local
+clusterName: <EKS-CLUSTER-NAME>
+createIngressClassResource: true
+disableRestrictedSecurityGroupRules: null
+enableBackendSecurityGroup: null
+enableShield: false
+enableWaf: false
+enableWafv2: false
+hostNetwork: false
+image:
+  pullPolicy: IfNotPresent
+  repository: public.ecr.aws/eks/aws-load-balancer-controller
+  tag: v2.8.2
+ingressClass: alb
+nodeSelector: {}
+rbac:
+  create: true
+region: <REGION>
+replicaCount: 1
+resources: {}
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+serviceAccount:
+  annotations: {}
+  automountServiceAccountToken: true
+  create: true
+  name: alb
+tolerations: []
+vpcId: null
+watchNamespace: null

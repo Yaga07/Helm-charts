@@ -1,0 +1,12 @@
+controller:
+  image:
+    image: ingress-nginx/controller
+    pullPolicy: IfNotPresent
+    registry: registry.k8s.io
+    tag: v1.11.2
+  hostNetwork: true
+  service:
+    enabled: true
+    external:
+      enabled: true
+    type: NodePort

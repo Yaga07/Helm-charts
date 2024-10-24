@@ -1,0 +1,62 @@
+image:
+  registry: docker.io
+  repository: bitnami/redis
+  tag: 7.4.1-debian-12-r0
+  digest: ""
+  pullPolicy: IfNotPresent
+architecture: replication
+auth:
+  enabled: true
+  sentinel: true
+  password: ""
+  existingSecret: ""
+  existingSecretPasswordKey: ""
+  usePasswordFiles: false
+  usePasswordFileFromSecret: true
+master:
+  ## @param master.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  kind: StatefulSet
+  persistence:
+    enabled: true
+    medium: ""
+    sizeLimit: ""
+    path: /data
+    subPath: ""
+    subPathExpr: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+replica:
+  kind: StatefulSet
+  replicaCount: 3
+  ## @param replica.command Override default container command (useful when using custom images)
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  resources: {}
+  persistence:
+    enabled: true
+    medium: ""
+    sizeLimit: ""
+    path: /data
+    subPath: ""
+    subPathExpr: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi

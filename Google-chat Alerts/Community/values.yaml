@@ -1,0 +1,63 @@
+affinity: {}
+app:
+  address: 0.0.0.0:6000
+  enable_request_logs: true
+  log: info
+  server_timeout: 60s
+args:
+- --config=/app/static/config.toml
+fullnameOverride: ""
+image:
+  pullPolicy: Always
+  repository: ghcr.io/mr-karan/calert
+  tag: v2.0.2
+ingress:
+  enabled: false
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+priorityClassName: ""
+providers:
+  google-chat:   # MUST BE SAME AS ALERTMANAGER'S RECIEVER & ROUTE VALUES 
+    endpoint: "<GOOGLE-CHAT-WEBHOOK>" # Google Chat Webhook URL
+    max_idle_conns: 50
+    template: static/message.tmpl
+    thread_ttl: 12h
+    timeout: 30s
+    type: google_chat
+replicaCount: 1
+resources:
+  limits:
+    cpu: 20m
+    memory: 48Mi
+  requests:
+    cpu: 5m
+    memory: 24Mi
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    add:
+    - NET_BIND_SERVICE
+    drop:
+    - ALL
+  enabled: false
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsGroup: 1001
+  runAsNonRoot: true
+  runAsUser: 1001
+  seccompProfile:
+    type: RuntimeDefault
+  windowsOptions:
+    hostProcess: false
+service:
+  port: 6000
+  type: ClusterIP
+templates:
+  message.tmpl: |
+    *({{.Labels.severity | toUpper }}) {{ .Labels.alertname | Title }} - {{.Status | Title }}*
+    {{ range .Annotations.SortedPairs -}}
+    {{ .Name | Title }}: {{ .Value}}
+    {{ end -}}
+tolerations: []
+topologySpreadConstraints: []

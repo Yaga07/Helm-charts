@@ -1,0 +1,42 @@
+image:
+  repository: rabbitmq
+  pullPolicy: IfNotPresent
+  tag: 3.8-management-alpine
+
+deploymentAnnotations:  
+  reloader.stakater.com/auto: "true"
+
+volumeMounts:
+- mountPath: /aijob/rabbitmq
+  name: aijob                 # EFS volume name
+  subPath: JOB_aijob
+
+volumes:
+  awsEKSCluster: false
+  pvc_name: pantheon-lite #### provide name of newly created pvc 
+  vol_name: aijob                   # EFS volume name
+  efs_path: /APPDATA 
+  efs_type: DirectoryOrCreate  
+
+
+envFromConfigMap:
+  RABBITMQ_DEFAULT_USER: "myuser"
+  RABBITMQ_DEFAULT_PASS: "xXXXXx"                           ##### Replace before deployment 
+  RABBITMQ_MAX_MESSAGE_SIZE: "134217728"
+  RABBITMQ_VM_MEMORY_HIGH_WATERMARK: "0.8"
+
+ingress:
+  hosts:
+  - paths:
+    - path: /
+      pathType: ImplementationSpecific
+    subdomain: rabbitmq ### change sub domain name as require
+    domain: ccad.qritive.com ### change domain name as require
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 160Mi
+
+nodeSelector:
+  type: cpu

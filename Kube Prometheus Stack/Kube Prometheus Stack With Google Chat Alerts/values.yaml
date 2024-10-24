@@ -1,0 +1,190 @@
+alertmanager:
+  config:
+    global:
+      http_config:
+        enable_http2: true
+        follow_redirects: true
+      resolve_timeout: 5m
+    inhibit_rules:
+    - equal:
+      - namespace
+      - alertname
+      source_matchers:
+      - severity="critical"
+      target_matchers:
+      - severity=~"warning|info"
+    - equal:
+      - namespace
+      - alertname
+      source_matchers:
+      - severity="warning"
+      target_matchers:
+      - severity="info"
+    - equal:
+      - namespace
+      source_matchers:
+      - alertname="InfoInhibitor"
+      target_matchers:
+      - severity="info"
+    receivers:
+    - name: "null"
+    - name: google-chat
+      webhook_configs:
+      - send_resolved: true
+        url: http://calert:6000/dispatch
+    route:
+      continue: false
+      group_by:
+      - alertname
+      group_interval: 5m
+      group_wait: 30s
+      receiver: google-chat
+      repeat_interval: 12h
+      routes:
+      - continue: false
+        matchers:
+        - alertname=~"InfoInhibitor|Watchdog|etcdInsufficientMembers|etcdMembersDown|TargetDown|KubeProxyDown|PrometheusRuleFailures|KubeMemoryOvercommit|KubeControllerManagerDown|KubeSchedulerDown"
+        receiver: "null"
+    templates:
+    - /etc/alertmanager/config/*.tmpl
+  enabled: true
+defaultRules:
+  kubeControllerManager: false
+  kubeSchedulerAlerting: false
+fullnameOverride: ""
+grafana:
+  adminPassword: password
+  defaultDashboardsTimezone: browser
+  enabled: true
+  ingress:
+    annotations:
+      nginx.org/redirect-to-https: "true"
+    enabled: true
+    hosts:
+    - grafana.example.com
+    ingressClassName: nginx
+    tls: []
+  persistence:
+    accessModes:
+    - ReadWriteOnce
+    enabled: true
+    size: 2Gi
+    storageClassName: gp3
+kubeControllerManager:
+  enabled: false
+  service:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+kubeScheduler:
+  enabled: false
+  service:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+kubernetesServiceMonitors:
+  enabled: true
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    darwin:
+      enabled: false
+    linux:
+      enabled: true
+prometheus:
+  agentMode: false
+  annotations: {}
+  enabled: true
+  extraSecret:
+    annotations: {}
+    auth: |
+      admin:password
+    data: null
+    name: prometheus-auth
+  ingress:
+    annotations: {}
+    enabled: true
+    hosts:
+    - prometheus.example.com
+    ingressClassName: nginx
+    labels: {}
+    paths: []
+    tls: []
+  prometheusSpec:
+    disableCompaction: true
+    externalUrl: ""
+    logFormat: logfmt
+    logLevel: info
+    nodeSelector: {}
+    replicas: 1
+    resources:
+      requests:
+        memory: 350Mi
+    retention: 10d
+    retentionSize: ""
+    routePrefix: /
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: gp3
+  service:
+    annotations: {}
+    clusterIP: ""
+    externalIPs: []
+    externalTrafficPolicy: Cluster
+    labels: {}
+    nodePort: 30090
+    port: 9090
+    targetPort: 9090
+    type: ClusterIP
+prometheus-node-exporter:
+  extraArgs:
+  - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+  - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$
+  namespaceOverride: ""
+  podLabels:
+    jobLabel: node-exporter
+  prometheus:
+    monitor:
+      enabled: true
+  releaseLabel: true
+  service:
+    portName: http-metrics
+prometheus-windows-exporter:
+  prometheus:
+    monitor:
+      enabled: false
+prometheusOperator:
+  enabled: true
+  hostNetwork: false
+  image:
+    pullPolicy: IfNotPresent
+    registry: quay.io
+    repository: prometheus-operator/prometheus-operator
+    sha: ""
+    tag: ""
+  nodeSelector: {}
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  revisionHistoryLimit: 10
+  service:
+    annotations: {}
+    clusterIP: ""
+    labels: {}
+    nodePort: 30080
+    nodePortTls: 30443
+    type: ClusterIP
+  tls:
+    enabled: true
+    internalPort: 10250
+    tlsMinVersion: VersionTLS13

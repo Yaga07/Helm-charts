@@ -1,0 +1,39 @@
+image:
+  repository: redis
+  tag: 7.2.3
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+
+serviceAccount:
+  create: false 
+
+redis:
+  secretName: redis-secret
+  password: "Y4R2E86Ov4v14zLZ5cKi"
+
+service:
+  type: ClusterIP
+  port: 6379    
+
+ingress:
+  enabled: false    
+
+resources: {}
+
+podAnnotations: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+volumes:
+  awsEKSCluster: true # Set to false if you're not using EKS
+  pvc_name: redis # The PVC name to be used in EKS
+
+pvc:
+  name: redis
+  storage: 5Gi
+  storageClassName: gp3
+

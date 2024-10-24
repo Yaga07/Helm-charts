@@ -1,0 +1,42 @@
+image:
+  repository: quay.io/keycloak/keycloak
+  pullPolicy: IfNotPresent
+  tag: 20.0.3
+
+deploymentAnnotations:  
+  reloader.stakater.com/auto: "true"
+
+volumeMounts:
+- name: data                         # EFS volume name
+  mountPath: /data
+
+volumes: #### postgres volume
+  awsEKSCluster: false
+  storage: 5Gi
+  pvc_name: keycloak-postgres
+  className: gp3
+  vol_name: data                   # EFS volume name
+  efs_path: /APPDATA/Postgres 
+  efs_type: DirectoryOrCreate  
+
+
+envFromConfigMap:
+  KEYCLOAK_ADMIN: qadmin
+  KC_PROXY: edge
+  KC_DB: postgres
+  KC_DB_SCHEMA: public
+  KC_DB_URL: "jdbc:postgresql://keycloak-postgres:5432/keycloak"
+  KC_DB_USERNAME: keycloak
+
+service:
+  annotations: {}
+  type: NodePort
+  port: 8080
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 550Mi
+
+nodeSelector:
+  type: cpu

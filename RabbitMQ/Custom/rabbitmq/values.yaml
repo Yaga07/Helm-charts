@@ -1,0 +1,104 @@
+# Default values for rabbitmq.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: rabbitmq                                                    ### Dynamic
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 3.8-management-alpine                                                                                ### Dynamic
+
+imagePullSecrets: 
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+deploymentAnnotations:  
+  reloader.stakater.com/auto: "true"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # allowPrivilegeEscalation: true
+  # capabilities:
+  #   add:
+  #   - NET_ADMIN
+  # runAsGroup: 1000
+  # runAsUser: 1000
+
+volumeMounts:
+- mountPath: /aijob/rabbitmq
+  name: aijob                       # EFS volume name
+  subPath: JOB_aijob
+
+volumes:
+  awsEKSCluster: false
+  pvc_name: pantheon-lite                                                                             #### Dynamic
+  vol_name: aijob                   # EFS volume name
+  efs_path: /APPDATA 
+  efs_type: DirectoryOrCreate  
+
+envFromConfigMap:
+  RABBITMQ_DEFAULT_USER: "myuser"
+  RABBITMQ_MAX_MESSAGE_SIZE: "134217728"
+  RABBITMQ_VM_MEMORY_HIGH_WATERMARK: "0.8"
+
+service:
+  type: ClusterIP
+  portA: 15672
+  portB: 5672
+
+ingress:
+  enabled: true
+  annotations: 
+    nginx.org/redirect-to-https: "true"
+  hosts:
+    - paths:
+        - path: /
+          pathType: ImplementationSpecific
+      subdomain: rabbbit                                                                        ### Dynamic
+      domain: eks.qritive.com                                                                          ### Dynamic
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  # limits:
+  #   memory: 4G
+  requests:
+    cpu: 50m
+    memory: 160Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector:
+  type: cpu
+
+tolerations: []
+
+affinity: {}

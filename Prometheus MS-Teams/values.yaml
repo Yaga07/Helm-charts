@@ -1,0 +1,13 @@
+connectors:
+- WEBHOOK_CONNECTOR_NAME_1: <WEBHOOK2> # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
+- WEBHOOK_CONNECTOR_NAME_2: <WEBHOOK2>  # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
+image:
+  repository: quay.io/prometheusmsteams/prometheus-msteams
+  tag: v1.5.2
+metrics:
+  serviceMonitor:
+    additionalLabels:
+      release: prometheus
+    enabled: true
+    scrapelnterval: 30s
+replicaCount: 1

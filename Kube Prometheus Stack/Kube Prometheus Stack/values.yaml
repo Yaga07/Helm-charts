@@ -1,0 +1,91 @@
+alertmanager:
+  config:
+    global:
+      http_config:
+        enable_http2: true
+        follow_redirects: true
+      resolve_timeout: 5m
+    inhibit_rules:
+    - equal:
+      - namespace
+      - alertname
+      source_matchers:
+      - severity="critical"
+      target_matchers:
+      - severity=~"warning|info"
+    - equal:
+      - namespace
+      - alertname
+      source_matchers:
+      - severity="warning"
+      target_matchers:
+      - severity="info"
+    - equal:
+      - namespace
+      source_matchers:
+      - alertname="InfoInhibitor"
+      target_matchers:
+      - severity="info"
+    receivers:
+    - name: "null"
+    - name: prometheus-msteams
+      webhook_configs:
+      - send_resolved: true
+        url: http://prometheus-msteams:2000/alerts
+#    - name: google-chat                            USED FOR GOOGLE CHAT SPACE WEBHOOK
+#      webhook_configs:   
+#      - send_resolved: true
+#        url: http://calert:6000/dispatch        
+    route:
+      continue: false
+      group_by:
+      - alertname
+      group_interval: 5m
+      group_wait: 30s
+      receiver: prometheus-msteams
+      #receiver: google-chat IF USING GOOGLE CHAT THEN ONLY UNCOMMENT GOOGLE CHAT SECTION AND COMMENT PROMETHEUS MSTEAMS
+      repeat_interval: 12h
+      routes:
+      - continue: false
+        matchers:
+        - alertname=~"InfoInhibitor|Watchdog|etcdInsufficientMembers|etcdMembersDown|TargetDown|KubeProxyDown|PrometheusRuleFailures|KubeMemoryOvercommit|KubeControllerManagerDown|KubeSchedulerDown"
+        receiver: "null"
+    templates:
+    - /etc/alertmanager/config/*.tmpl
+  enabled: true
+grafana:
+  adminPassword: password
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.example.com
+    ingressClassName: corista
+    pathType: ImplementationSpecific
+  persistence:
+    accessModes:
+    - ReadWriteOnce
+    enabled: true
+    size: 2Gi
+    storageClassName: gp3
+    type: pvc
+prometheus:
+  ingress:
+    enabled: true
+    hosts:
+    - prometheus.example.com
+    ingressClassName: nginx
+    pathType: ImplementationSpecific
+    paths:
+    - /
+  prometheusSpec:
+    externalUrl: https://prometheus.example.com
+    retention: 30d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: gp3

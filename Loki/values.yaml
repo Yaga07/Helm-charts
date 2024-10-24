@@ -1,0 +1,27 @@
+loki:
+  image:
+    registry: docker.io
+    repository: grafana/loki
+    tag: 2.9.2
+  structuredConfig:
+    ingester:
+      chunk_idle_period: 1h
+      chunk_target_size: 1536000
+      max_chunk_age: 1h
+      max_transfer_retries: 0
+    schema_config:
+      configs:
+      - from: "2020-09-07"
+        index:
+          period: 24h
+          prefix: loki_index_
+        object_store: aws
+        schema: v11
+        store: boltdb-shipper
+    storage_config:
+      aws:
+        bucketnames: <S3-BUCKETNAME>
+        s3: s3://<REGION>
+        s3forcepathstyle: false
+      boltdb_shipper:
+        shared_store: s3
