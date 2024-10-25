@@ -1,35 +1,46 @@
-helm install my-release oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0
-helm install my-release oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0 --set controller.image.repository=myregistry.example.com/nginx-plus-ingress --set controller.nginxplus=true
 
+
+> helm repo add nginx   https://helm.nginx.com/stable
+> helm install nginx -n ingress nginx/nginx-ingress -f values.yaml --create-namespace=true
+> helm uninstall nginx -n ingress
+
+
+helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0
+helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0 --set controller.image.repository=myregistry.example.com/nginx-plus-ingress --set controller.nginxplus=true
+
+
+Reference
+
+https://helm.nginx.com/
 https://github.com/nginxinc/kubernetes-ingress/blob/main/charts/nginx-ingress/values.yaml
 
 
 ------------------------------------------------------------------
 
 
-# My Helm Chart
+# Nginx Ingress Helm Chart
 
-A Helm chart for deploying **My Application** on Kubernetes.
+A Helm chart for deploying **Nginx Ingress** on Kubernetes.
 
 ## Prerequisites
 
 - Kubernetes 1.20+
 - Helm 3.0+
 - (Optional) Ingress Controller for enabling Ingress resources
-- PersistentVolume provisioner for stateful applications
 
 ## Installation
-
-To install the chart with the release name `my-release`:
-
-```bash
-helm install my-release ./my-chart
-```
-This command deploys the chart using the default values. You can customize the installation by specifying custom values:
+Add Helm Repo of Nginx Ingress
 
 ```bash
-helm install my-release ./my-chart -f values.yaml
+helm repo add nginx https://helm.nginx.com/stable
 ```
+
+Install the chart of `Nginx-Ingress`:
+
+```bash
+ helm install nginx -n ingress nginx/nginx-ingress -f values.yaml --create-namespace=true
+```
+This command deploys the chart using the custom values. You can customize the installation by specifying custom values:
 
 Configuration
 The following table lists the configurable parameters of the chart and their default values:
@@ -55,38 +66,17 @@ To upgrade the chart, use:
 
 ```bash
 
-helm upgrade my-release ./my-chart
+ helm upgrade --install nginx -n ingress nginx/nginx-ingress -f values.yaml 
 ```
-If you made changes to values.yaml, you can include the updated file:
 
-```bash
-
-helm upgrade my-release ./my-chart -f values.yaml
-```
 Uninstalling the Chart
 
-To uninstall/delete the my-release deployment:
+To uninstall/delete the Nginx-Ingress deployment:
 
 ```bash
-helm uninstall my-release
+helm uninstall nginx -n ingress
 ```
 This command removes all the Kubernetes resources associated with the release and deletes the release from Helm's history.
-Persistence
-
-The chart can use Persistent Volume Claims (PVCs) to persist data. By default, PVCs are enabled. To disable persistence, set the following value in values.yaml:
-
-```yaml
-persistence:
-  enabled: false
-```
-To customize the PVC, you can use the following options:
-Key	Type	Default	Description
-persistence.size	string	8Gi	The size of the PVC
-persistence.storageClass	string	""	The storage class to use for the PVC
-Notes
-
-    Ensure that the specified ingress.hosts values match your domain if you are using Ingress.
-    If you are using a private image repository, make sure to configure image pull secrets.
 
 Contributing
 
