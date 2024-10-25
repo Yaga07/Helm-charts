@@ -1,17 +1,3 @@
-
-
-> helm repo add nginx   https://helm.nginx.com/stable
-> helm install nginx -n ingress nginx/nginx-ingress -f values.yaml --create-namespace=true
-> helm uninstall nginx -n ingress
-
-
-helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0
-helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0 --set controller.image.repository=myregistry.example.com/nginx-plus-ingress --set controller.nginxplus=true
-
-
-------------------------------------------------------------------
-
-
 # Nginx Ingress Helm Chart
 
 A Helm chart for deploying **Nginx Ingress** on Kubernetes.
