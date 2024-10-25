@@ -9,12 +9,6 @@ helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version
 helm install Nginx-Ingress oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.4.0 --set controller.image.repository=myregistry.example.com/nginx-plus-ingress --set controller.nginxplus=true
 
 
-Reference
-
-https://helm.nginx.com/
-https://github.com/nginxinc/kubernetes-ingress/blob/main/charts/nginx-ingress/values.yaml
-
-
 ------------------------------------------------------------------
 
 
@@ -77,6 +71,13 @@ To uninstall/delete the Nginx-Ingress deployment:
 helm uninstall nginx -n ingress
 ```
 This command removes all the Kubernetes resources associated with the release and deletes the release from Helm's history.
+
+Reference
+```bash
+https://helm.nginx.com/
+https://github.com/nginxinc/kubernetes-ingress/blob/main/charts/nginx-ingress/values.yaml
+```
+
 
 Contributing
 
