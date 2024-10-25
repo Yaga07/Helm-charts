@@ -23,20 +23,20 @@ Install the chart of `Nginx-Ingress`:
 This command deploys the chart using the custom values. You can customize the installation by specifying custom values:
 
 Configuration
-The following table lists the configurable parameters of the chart and their default values:
+The following table lists the configurable parameters of the chart and their updated values:
 
-| Key                   | Type   | Default         | Description                                          |
-|-----------------------|--------|-----------------|------------------------------------------------------|
-| `replicaCount`        | int    | `1`             | Number of replicas for the deployment                |
-| `image.repository`    | string | `my-image`      | The image repository for the application             |
-| `image.tag`           | string | `latest`        | The image tag to use                                 |
-| `image.pullPolicy`    | string | `IfNotPresent`  | Image pull policy                                    |
-| `service.type`        | string | `ClusterIP`     | Kubernetes service type (e.g., ClusterIP, NodePort, LoadBalancer) |
-| `service.port`        | int    | `80`            | The port the service will listen on                  |
-| `ingress.enabled`     | bool   | `false`         | Enable ingress for the application                   |
-| `ingress.annotations` | object | `{}`            | Annotations for the ingress                          |
-| `ingress.hosts`       | list   | `[]`            | List of hosts for the ingress                        |
-| `ingress.tls`         | list   | `[]`            | TLS configuration for the ingress                    |
+| Key                      | Type   | Default               | Description                                          |
+|--------------------------|--------|-----------------------|------------------------------------------------------|
+| `replicaCount`           | int    | `1`                   | Number of replicas for the deployment                |
+| `image.repository`       | string | `nginx/nginx-ingress` | The image repository for the application             |
+| `image.tag`              | string | `3.2.0`               | The image tag to use                                 |
+| `image.pullPolicy`       | string | `IfNotPresent`        | Image pull policy                                    |
+| `service.type`           | string | `NodePort`            | Kubernetes service type (e.g., ClusterIP, NodePort, LoadBalancer) |
+| `service.port`           | int    | `80`                  | The port the service will listen on                  |
+| `controller.hostNetwork` | bool   | `true`                | Enable ingress to use host network                   |
+| `controller.resources`   | object | `{}`                  | resource allocation or limit                         |
+| `controller.ingressClass`| string | `nginx`               | ingress class name                                   |
+
 
 
 For the full list of available values, see the values.yaml file.
