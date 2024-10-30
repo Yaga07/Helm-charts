@@ -1,13 +1,43 @@
-connectors:
-- WEBHOOK_CONNECTOR_NAME_1: <WEBHOOK2> # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
-- WEBHOOK_CONNECTOR_NAME_2: <WEBHOOK2>  # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
+replicaCount: 1
+
 image:
   repository: quay.io/prometheusmsteams/prometheus-msteams
   tag: v1.5.2
+  pullPolicy: Always
+
+connectors:
+- WEBHOOK_CONNECTOR_NAME_1: <WEBHOOK2> # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
+- WEBHOOK_CONNECTOR_NAME_2: <WEBHOOK2>  # KEY IS USED IN ALERTMANAGER CONFIG IN KUBE PROMETHEUS STACK'S HELM VALUE <UNDER webhook_configs -> url's path >.
+
+resources: 
+ limits:
+   cpu: 10m
+   memory: 32Mi
+ requests:
+   cpu: 1m
+   memory: 8Mi
+
+service:
+  type: ClusterIP
+  port: 2000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
 metrics:
   serviceMonitor:
-    additionalLabels:
-      release: prometheus
-    enabled: true
-    scrapelnterval: 30s
-replicaCount: 1
+    enabled: false
+    additionalLabels: {}
+    scrapeInterval: 30s
+
+## Specify the custom message card template for MS teams
+customCardTemplate: ""
+# customCardTemplate: |
+#   {{ define "teams.card" }}
+#   {...}
+#   {{ end }}
+
+templateFile: /etc/template/card.tmpl

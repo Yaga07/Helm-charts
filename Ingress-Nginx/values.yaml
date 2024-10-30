@@ -10,3 +10,4 @@ controller:
     external:
       enabled: true
     type: NodePort
+    

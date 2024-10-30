@@ -6,7 +6,7 @@ image:
 
 auth:
   username: user
-  password: ""
+  password: "password"
   securePassword: true
 
   tls:
